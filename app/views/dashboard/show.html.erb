@@ -1,0 +1,13 @@
+<br/>
+<% if signed_in? %>
+  <%= link_to "Sign out #{current_user.name}", sign_out_path, method: :delete %>
+<% else %>
+  <%= link_to 'Sign in', sign_in_path %>
+<% end %>
+<br/>
+
+<h1>Listing Github: <%= current_user.name %></h1>
+
+<% @response.each do |repo| %>
+  <%= repo["name"] %><br/>
+<%end%>
