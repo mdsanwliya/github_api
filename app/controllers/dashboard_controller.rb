@@ -1,11 +1,12 @@
 class DashboardController < ApplicationController
   def show
-    url = URI("https://api.github.com/users/#{current_user.name}/repos")
-    res =  Net::HTTP.get_response(url)
-    @response = JSON.parse(res.body)
+    @response = []
+    if current_user
+      @response = GithubApiService.new(current_user).execute
+    end
   end
 
   def current_user
-    User.find_by!(uid: session[:uid]) 
+    User.find_by(uid: session[:uid]) 
   end
 end
