@@ -7,12 +7,23 @@ class GithubApiService
     @user = user
   end
 
+  def escape(s)
+    CGI.escape(s.to_s)
+  end
+
+  def build_query(params)
+    base_filter= "?sort=stars&order=desc#{
+    params.map { |k, v|
+      v.nil? ? escape(k) : "#{escape(k)}=#{escape(v)}"
+    }.join('&')}"
+  end
+
   def user_repository
     "#{BASE_URL}/users/#{user.name}/repos"
   end
 
   def execute(type=nil)
-    JSON.parse(call(user_repository))
+    JSON.parse(call(user_repository,))
   end
 
   def call(url, payload={})
@@ -21,3 +32,4 @@ class GithubApiService
     resp.body
   end
 end
+
