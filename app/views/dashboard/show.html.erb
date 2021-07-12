@@ -1,13 +1,19 @@
 <br/>
 <% if signed_in? %>
-  <%= link_to "Sign out #{current_user.name}", sign_out_path, method: :delete %>
-<% else %>
-  <%= link_to 'Sign in', sign_in_path %>
+  <% # Filter %>
+  <%= select_tag "filter", options_for_select(
+    [['Week', (Date.today - 7.days).strftime('%Y-%m-%d')],
+    ['Month', (Date.today - 1.month).strftime('%Y-%m-%d')],
+    ['Year', (Date.today - 1.year).strftime('%Y-%m-%d')]]),
+    include_blank: 'Please select',
+    class: " btn btn-default filter-date" %>
+  
+  <%= check_box_tag 'language', '', false, class: 'filter-language' %> Ruby
+  <button class="btn btn-primary filter-button">Filter</button>
+  <br/><br/>
+
+<% # Most popular repository %>
+  <div id="display_listing">
+    <%= render partial: 'dashboard/listing', locals: { repos: @repos, title: 'Your Repositories' } %>
+  </div>
 <% end %>
-<br/>
-
-<h1>Listing Github: <%= current_user.name %></h1>
-
-<% @response.each do |repo| %>
-  <%= repo["name"] %><br/>
-<%end%>

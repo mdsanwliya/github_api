@@ -2,7 +2,7 @@ class GithubApiService
   BASE_URL = "https://api.github.com"
 
   attr_accessor :user
-
+  
   def initialize(user)
     @user = user
   end
@@ -11,25 +11,29 @@ class GithubApiService
     CGI.escape(s.to_s)
   end
 
-  def build_query(params)
-    base_filter= "?sort=stars&order=desc#{
-    params.map { |k, v|
-      v.nil? ? escape(k) : "#{escape(k)}=#{escape(v)}"
-    }.join('&')}"
-  end
-
-  def user_repository
+  def user_repositories
     "#{BASE_URL}/users/#{user.name}/repos"
   end
 
-  def execute(type=nil)
-    JSON.parse(call(user_repository,))
+  def most_popular(params)
+    if params["language"].eql?('ruby')
+      "#{BASE_URL}/search/repositories?sort=stars&order=desc&q=created>#{params['date']}&per_page=10&q=language:ruby"
+    else
+      "#{BASE_URL}/search/repositories?sort=stars&order=desc&q=created>#{params['date']}&per_page=10"
+    end
   end
 
-  def call(url, payload={})
+  def execute(params={})
+    if params.empty?
+      JSON.parse(call(user_repositories))
+    else
+      JSON.parse(call(most_popular(params)))["items"]
+    end
+  end
+
+  def call(url)
     uri = URI(url)
     resp = Net::HTTP.get_response(uri)
     resp.body
   end
 end
-

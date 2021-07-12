@@ -1,0 +1,6 @@
+<h1 class="dashboard-heading"><%= title %></h1><br/>
+<ul class="list-group dashboard-body">
+  <% repos.each do |repo| %>
+    <li class="list-group-item"><%= repo["name"] %><li/>
+  <%end%>
+</ul>

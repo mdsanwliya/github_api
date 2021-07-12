@@ -1,12 +1,21 @@
 class DashboardController < ApplicationController
+  before_action :current_user, only: %i[show repositories]
+
   def show
-    @response = []
-    if current_user
-      @response = GithubApiService.new(current_user).execute
+    @repos = GithubApiService.new(@user).execute(dashboard_params.to_h)
+    respond_to do |format|
+      format.js
+      format.html 
     end
   end
 
   def current_user
-    User.find_by(uid: session[:uid]) 
+    @user = User.find_by!(uid: session[:uid])
+    rescue ActiveRecord::RecordNotFound => errors
+      render notice: {errors: errors}
+  end
+
+  def dashboard_params
+    params.permit(:date, :language)
   end
 end
